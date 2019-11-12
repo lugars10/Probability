@@ -8,19 +8,52 @@ namespace MetoSimulation
         {
             Person x = new Person(1, 2);
             int movForShuffle;
+            int iters;
+            int nResults;
+            double average = 0;
+            double p = 0;
 
             Console.WriteLine("Movements for shuffle: ");
             movForShuffle = Convert.ToInt32(Console.ReadLine());
 
             Console.WriteLine("TIME DISTRIBUTION");
-            double[] timeArray = shuffleArray(inputArray(), movForShuffle);
+            double[] timeArray = inputArray();
             
             Console.WriteLine("FREQUENCY DISTRIBUTION");
-            double[] freqArray = shuffleArray(inputArray(), movForShuffle);
+            double[] freqArray = inputArray();
+
+            Console.WriteLine("Number of iterations of each system: ");
+            iters = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Number of results: ");
+            nResults = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("====RESULTS====");
+            for(int i = 0; i!= nResults; i++)
+            {
+                p = prob(timeArray, freqArray, iters, movForShuffle);
+                average += p;
+                Console.WriteLine(p);
+            }
+
+            average = average / nResults;
+            Console.WriteLine("AVERAGE: {0}", average);
+
+
+            //Console.WriteLine("===========");
+            //Console.WriteLine("Probability: {0}", (double) given / total);
+        }
+
+        public static double prob(double[] timeArray, double[] freqArray, int iterations, int shuffleMov)
+        {
+            double probability;
+
+            timeArray = shuffleArray(timeArray, shuffleMov);
+            freqArray = shuffleArray(freqArray, shuffleMov);
 
             Person[] people = new Person[timeArray.Length];
             Person p;
-            for(int i = 0; i!= timeArray.Length; i++)
+            for (int i = 0; i != timeArray.Length; i++)
             {
                 p = new Person(Convert.ToInt32(timeArray[i]), freqArray[i]);
                 people[i] = p;
@@ -32,10 +65,10 @@ namespace MetoSimulation
             Random generator = new Random();
             double rndResult;
 
-            Console.WriteLine("Number of iterations of system: ");
-            total = Convert.ToInt32(Console.ReadLine());
+            
+            total = iterations;
 
-            for(int i = 0; i != people.Length; i++)
+            for (int i = 0; i != people.Length; i++)
             {
                 if (people[i].time != 0)
                 {
@@ -49,17 +82,18 @@ namespace MetoSimulation
                     people[i].time--;
                 }
 
-                if(current != total && (i+1) == people.Length)  //If loop is ending and requirement is not accomplished
+                if (current != total && (i + 1) == people.Length)  //If loop is ending and requirement is not accomplished
                 {
-                    for(int j = 0; j!= people.Length; j++)
+                    for (int j = 0; j != people.Length; j++)
                     {
                         people[j].time = people[j].TIME;    //Restoration of time of each person
                     }
                 }
             }
 
-            Console.WriteLine("===========");
-            Console.WriteLine("Probability: {0}", (double) given / total);
+            probability = (double) given / total;
+
+            return probability;
         }
 
         public static double[] inputArray()
